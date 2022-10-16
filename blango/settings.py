@@ -44,12 +44,17 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'blog',
     'crispy_forms',
     'crispy_bootstrap5',
     'debug_toolbar',
     'blango_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 SITE_ID = 1
 AUTH_USER_MODEL = "blango_auth.User"
