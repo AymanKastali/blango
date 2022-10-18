@@ -1,12 +1,11 @@
 from http import HTTPStatus
-
 from django.urls import reverse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
 from blog.api.serializers import PostSerializer
 from blog.models import Post
-
+from blog.api.permissions import AuthorModifyOrReadOnly, IsAdminUserForObject
+from rest_framework import generics
 
 @api_view(["GET", "POST"])
 def post_list(request, format=None):
@@ -42,3 +41,9 @@ def post_detail(request, pk, format=None):
     elif request.method == "DELETE":
         post.delete()
         return Response(status=HTTPStatus.NO_CONTENT)
+
+
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AuthorModifyOrReadOnly | IsAdminUserForObject]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
