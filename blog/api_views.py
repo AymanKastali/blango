@@ -7,7 +7,18 @@ from blog.api.permissions import AuthorModifyOrReadOnly, IsAdminUserForObject
 from rest_framework import generics
 from blango_auth.models import User
 from rest_framework import mixins
+from rest_framework import generics, viewsets
 from blog.api.serializers import PostSerializer, UserSerializer, PostDetailSerializer
+from blog.api.serializers import (
+    PostSerializer,
+    UserSerializer,
+    PostDetailSerializer,
+    TagSerializer,
+)
+from blog.models import Post, Tag
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 
 @api_view(["GET", "POST"])
 def post_list(request, format=None):
@@ -64,3 +75,14 @@ class UserDetail(generics.RetrieveAPIView):
     lookup_field = "email"
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    @action(methods=["get"], detail=True, name="Posts with the Tag")
+    def posts(self, request, pk=None):
+        tag = self.get_object()
+        post_serializer = PostSerializer(
+            tag.posts, many=True, context={"request": request}
+        )
+        return Response(post_serializer.data)
